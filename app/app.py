@@ -87,7 +87,14 @@ if question:
             with st.spinner("Searching documents and asking Gemini..."):
                 answer, sources = ask_question(question)
 
-            st.markdown(answer)
+            if isinstance(answer, str):
+                st.markdown(answer)
+            elif isinstance(answer, list):
+                for block in answer:
+                    if isinstance(block, dict) and block.get("type") == "text":
+                        st.markdown(block.get("text", ""))
+            else:
+                st.markdown(str(answer))
 
             with st.expander("Sources"):
                 for source in sources:

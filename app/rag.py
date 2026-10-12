@@ -74,7 +74,26 @@ Question:
 {question}
 """
 
+
     response = llm.invoke(prompt)
+
+    # Convert Gemini's response content into a plain string
+    content = response.content
+
+    if isinstance(content, str):
+        answer = content
+
+    elif isinstance(content, list):
+        answer = "\n\n".join(
+            block["text"]
+            for block in content
+            if isinstance(block, dict)
+            and block.get("type") == "text"
+            and isinstance(block.get("text"), str)
+        )
+
+    else:
+        answer = str(content)
 
     sources = [
         {
@@ -88,4 +107,4 @@ Question:
         for doc in results
     ]
 
-    return response.content, sources
+    return answer, sources
